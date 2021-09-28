@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_invoice_document" inherit_id="account.report_invoice_document">
+            <span t-field="o.amount_untaxed" position="after">
+                <span t-field="o.amount_untaxed_with_disc" t-if="o.move_type == 'out_invoice'" />
+            </span>
+            <span t-field="o.amount_untaxed" position="attributes">
+                <attribute name="t-if">o.move_type != 'out_invoice'</attribute>
+            </span>
+            <xpath expr="//span[@t-field='o.amount_untaxed']/parent::td/parent::tr" position="after">
+                <tr t-if="o.discount_num != 0 and o.move_type == 'out_invoice'">
+                    <td><strong>Discount <span t-field="o.discount_num"/>%</strong></td>
+                    <td class="text-right">
+                        <span t-field="o.amount_discount" />
+                    </td>
+                </tr>
+            </xpath>
+            <xpath expr="//t[@name='account_invoice_line_accountable']/parent::tr" position="attributes">
+                <attribute name="t-if">not line.is_discount_section and not line.is_discount_line and not line.is_stop_line</attribute>
+            </xpath>
+            <xpath expr="//tbody[hasclass('invoice_tbody')]/t/tr" position="inside">
+                <t t-if="line.display_type == 'line_title'">
+                    <td colspan="99">
+                        <strong class="ml16" t-esc="line.name" />
+                    </td>
+                </t>
+                <t t-if="line.display_type == 'line_sub_total'">
+                    <td class="is-subtotal-manual text-right" colspan="99">
+                        <strong class="mr16" t-esc="line.name" />
+                        <span t-esc="line.section_total"
+                              t-options='{"widget": "monetary", "display_currency": o.currency_id}' />
+                    </td>
+                </t>
+                <t t-if="line.totals_below_sections and line.display_type == 'line_section_sub_total'">
+                    <td class="is-subtotal text-right" colspan="99">
+                        <t t-set="section_sub_total_line" t-value="current_section and o.invoice_line_ids.filtered(lambda line_id: line_id.section_number == current_section.section_number and line_id.display_type == 'line_section_sub_total') or None" />
+                        <strong class="mr16">
+                            <t t-if="section_sub_total_line" t-esc="section_sub_total_line.name" />
+                            <t t-if="not section_sub_total_line">
+                                Sub-total
+                            </t>
+                        </strong>
+                        <span t-field="line.section_total" />
+                    </td>
+                </t>
+            </xpath>
+            <xpath expr="//tr[hasclass('is-subtotal')]" position="attributes">
+                <attribute name="t-if">not line.totals_below_sections</attribute>
+            </xpath>
+            <xpath expr="//h2[1]" position="replace">
+                <h2 style="font-size: 2.0em;">
+                    <span t-if="o.move_type == 'out_invoice' and o.state == 'posted'">Invoice</span>
+                    <span t-if="o.move_type == 'out_invoice' and o.state == 'draft'">Draft Invoice</span>
+                    <span t-if="o.move_type == 'out_invoice' and o.state == 'cancel'">Cancelled Invoice</span>
+                    <span t-if="o.move_type == 'out_refund'">Credit Note </span>
+                    <span t-if="o.move_type == 'in_refund'">Vendor Credit Note </span>
+                    <span t-if="o.move_type == 'in_invoice'">Vendor Bill </span>
+                    <span t-if="o.name != '/'" t-field="o.name"/>
+                </h2>
+            </xpath>
+        </template>
+
+        <record id="account.account_invoices" model="ir.actions.report">
+            <field name="binding_model_id" eval="False" />
+        </record>
+
+        <record id="account.account_invoices_without_payment" model="ir.actions.report">
+            <field name="binding_model_id" eval="False" />
+        </record>
+
+        <record id="account.action_account_original_vendor_bill" model="ir.actions.report">
+            <field name="binding_model_id" eval="False" />
+        </record>
+
+        <record id="report_account_invoices_with_isr" model="ir.actions.report">
+            <field name="name">Invoices with ISR</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">d4e_pack_accounting.account_invoices_with_isr</field>
+            <field name="print_report_name">(object._get_report_base_filename())</field>
+            <field name="attachment">(object.state == 'posted') and ((object.name or 'INV').replace('/','_')+'.pdf')</field>
+            <field name="groups_id" eval="[(4, ref('account.group_account_invoice')), (4, ref('account.group_account_readonly'))]" />
+        </record>
+
+        <record id="report_account_invoices_with_qr" model="ir.actions.report">
+            <field name="name">Invoices with QR</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">d4e_pack_accounting.account_invoices_with_qr</field>
+            <field name="print_report_name">(object._get_report_base_filename())</field>
+            <field name="attachment">(object.state == 'posted') and ((object.name or 'INV').replace('/','_')+'.pdf')</field>
+            <field name="groups_id" eval="[(4, ref('account.group_account_invoice')), (4, ref('account.group_account_readonly'))]" />
+        </record>
+    </data>
+</odoo>

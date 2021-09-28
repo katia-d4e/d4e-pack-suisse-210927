@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="assets_backend" name="d4e_pack_accounting assets" inherit_id="web.assets_backend">
+            <xpath expr="//link[last()]" position="after">
+                <link rel="stylesheet" type="text/scss" href="/d4e_pack_accounting/static/src/scss/style.scss" />
+            </xpath>
+            <xpath expr="//script[last()]" position="after">
+                <script type="text/javascript" src="/d4e_pack_accounting/static/src/js/section_sub_total.js"></script>
+                <script type="text/javascript" src="/d4e_pack_accounting/static/src/js/account_move_line_widget.js"></script>
+                <script type="text/javascript" src="/d4e_pack_accounting/static/src/js/script.js"></script>
+                <script type="text/javascript" src="/d4e_pack_accounting/static/src/js/message.js"></script>
+            </xpath>
+        </template>
+    </data>
+</odoo>

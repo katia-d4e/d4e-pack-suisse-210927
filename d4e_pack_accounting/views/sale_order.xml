@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='order_details']" position="after">
+                <group></group>
+                <group>
+                    <field name="is_stop_total" />
+                    <field name="stop" widget="radio" options="{'horizontal': true}"
+                           attrs="{'invisible': [('is_stop_total', '=', False)]}" />
+                    <field name="stop_at" attrs="{'invisible': [('is_stop_total', '=', False)], 'required': [('is_stop_total', '=', True)]}" />
+                    <button name="reorder_lines_action" string="Reorder lines"
+                            type="object" class="btn-primary"
+                            attrs="{'invisible': ['|', ('is_stop_total', '=', False), ('discount_num', '!=', 0)]}" />
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="after">
+                <field name="is_stop_line" invisible="True" />
+            </xpath>
+            <xpath expr="//field[@name='amount_untaxed']" position="after">
+                <field name="amount_discount"
+                       attrs="{'invisible': ['|', ('discount_num', '!=', 0), ('is_stop_total', '=', False)]}"
+                       widget='monetary'
+                       options="{'currency_field': 'currency_id'}" />
+            </xpath>
+            <field name="payment_term_id" position="after">
+                <label for="discount_num" />
+                <div>
+                    <field name="discount_num" attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}" style="width: 50%;" />
+                    <button name="compute_discount" attrs="{'invisible': [('state', '!=', 'draft')]}" type="object" string="compute" class="oe_link" style="width: 50%;text-align: left;" />
+                </div>
+                <button name="reorder_lines_action" string="Reorder lines"
+                        type="object" class="btn-primary"
+                        attrs="{'invisible': [('discount_num', '=', 0)]}" />
+            </field>
+            <field name="amount_untaxed" position="after">
+                <field name="amount_discount"
+                       attrs="{'invisible': [('discount_num', '=', 0)]}"
+                       widget='monetary'
+                       options="{'currency_field': 'currency_id'}" />
+            </field>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="after">
+                <field name="is_discount_line" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="new_section_number" invisible="1" />
+                <field name="sections_sum_total" invisible="1" />
+            </xpath>
+            <xpath expr="//control" position="inside">
+                <create name="add_title_control" string="Add a Title" context="{'default_display_type': 'line_title'}" />
+                <create name="add_sub_total_control" string="Add a Sub-total" context="{'default_display_type': 'line_sub_total'}" />
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_total']" position="before">
+                <field name="section_total" invisible="1" />
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_total']" position="after">
+                <field name="section_number" invisible="1" />
+                <field name="tax_selection" invisible="1" />
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form/field[@name='name']" position="before">
+                <label for="name" string="Section Sub-total name" attrs="{'invisible': [('display_type', '!=', 'line_section_sub_total')]}"/>
+                <label for="name" string="Sub-total name" attrs="{'invisible': [('display_type', '!=', 'line_sub_total')]}"/>
+                <label for="name" string="Title name" attrs="{'invisible': [('display_type', '!=', 'line_title')]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,35 @@
+table.o_section_and_note_list_view {
+    tr.o_data_row.o_is_line_title {
+        font-weight: bold;
+    }
+    tr.o_data_row.o_is_line_section_sub_total, tr.o_data_row.o_is_line_sub_total {
+        td.o_data_cell.o_section_and_note_text_cell {
+            text-align: end;
+            font-weight: bold;
+        }
+    }
+}
+
+tr.o_aml_is_line_title {
+    td:not(.o_aml_line_title) {
+        position: relative;
+        left: -90000px;
+    }
+    td.o_aml_line_title {
+        font-weight: bold;
+    }
+}
+
+tr.o_aml_is_line_note {
+    td:not(.o_aml_line_note) {
+        position: relative;
+        left: -90000px;
+    }
+}
+
+tr.o_aml_is_line_section {
+    td:not(.o_aml_line_section) {
+        position: relative;
+        left: -90000px;
+    }
+}
