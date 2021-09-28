@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <template id="assets_backend" inherit_id="web.assets_backend">
-        <xpath expr="//script[last()]" position="after">
-            <script type="text/javascript" src="/d4e_pack_accounting/static/src/js/hide-menu.js" />
-        </xpath>
-    </template>
-</odoo>
